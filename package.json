@@ -1,0 +1,36 @@
+{
+	"//1": "describes your app and its dependencies",
+	"//2": "https://docs.npmjs.com/files/package.json",
+	"//3": "updating this file will download and update your packages",
+	"name": "wikipedia-friend-AoG-app",
+	"version": "0.2.2",
+	"description": "Action on google to get interesting stuff from wikipedia and get smarter",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^4.14.0",
+		"actions-on-google": "^1.0.4",
+		"body-parser": "^1.15.2",
+		"request": "^2.79.0",
+		"es6-map": "^0.1.4",
+		"prettyjson": "^1.2.1",
+		"underscore.string": "^3.3.4",
+    "wikipedia-js": "^0.0.6",
+    "sqlite3": "*",
+    "sequelize": "*"
+	},
+	"engines": {
+		"node": "6.9.1"
+	},
+  "repository" : "https://github.com/greenido/wikipedia-friend-action",
+  "license" : "SEE LICENSE IN LICENSE.md",
+	"keywords": [
+		"node",
+		"aog",
+    "actions-on-google",
+		"express",
+    "sqlite3"
+	]
+}
