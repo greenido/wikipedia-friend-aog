@@ -1,13 +1,7 @@
 # Wikipedia Friend
 ![](https://greenido.files.wordpress.com/2017/11/image5.png)
 ### Actions on Google to get interesting stuff from wikipedia and get smarter!
-
-### TODOs
-  * Fetch top 3-5 results 
-  * Allow user to set fav topics.
-  
-  
-
+ 
 ## Your Project
 
 On the back-end,
@@ -19,11 +13,16 @@ On the front-end,
 - edit `client.js`, `style.css` and `index.html`
 - drag in `assets`, like images or music, to add them to your project
 
-
 ### (More) Videos
 [![](https://cdn.glitch.com/5e52a72f-da3a-4415-b9e8-014f7884e589%2Faog-videos-best-practices-ido.png?1510886484980)](https://www.youtube.com/playlist?list=PLOU2XLYxmsILvfJcIASBDbgfxloFz_XsU)
 What to learn more about Actions on Google with Videos? Click on the image above.
 
+### TODOs
+  [ ] Fetch top 3-5 results 
+  [ ] Allow user to set fav topics.
+  [x] Save searches into SQLite
+ 
+ 
 ## Getting Started
 
 * [Create an agent on Dialogflow for the Google Assistant](https://medium.com/google-developers/build-your-first-smart-bot-for-google-home-18949f74822c)
