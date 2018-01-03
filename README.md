@@ -2,6 +2,8 @@
 ![](https://greenido.files.wordpress.com/2017/11/image5.png)
 ### Actions on Google to get interesting stuff from wikipedia and get smarter!
  
+[Try it live](https://wikipedia-friend.glitch.me/) 
+ 
 ## Your Project
 
 On the back-end,
