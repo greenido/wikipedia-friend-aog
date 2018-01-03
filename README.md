@@ -18,9 +18,10 @@ On the front-end,
 What to learn more about Actions on Google with Videos? Click on the image above.
 
 ### TODOs
-  [ ] Fetch top 3-5 results 
-  [ ] Allow user to set fav topics.
-  [x] Save searches into SQLite
+
+[ ] Fetch top 3-5 results 
+[ ] Allow user to set fav topics?
+[x] Save searches into SQLite
  
  
 ## Getting Started
