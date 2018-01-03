@@ -80,6 +80,10 @@ app.post('/', function(req, res, next) {
       let foundDataField = text.indexOf("data-");
       while (inx1 < text.length && foundDataField > 0) {
         let inx2 = text.indexOf(">", inx1) + 1;
+        if (inx2 < inx1) {
+          inx2 = text.indexOf("\"", inx1) + 1;
+          inx2 = text.indexOf("\"", inx2) + 2;
+        }
         text = text.substring(0,inx1) + text.substring(inx2, text.length);
         inx1 = inx2 + 1;
         foundDataField = text.indexOf("data-", inx1);
@@ -94,7 +98,7 @@ app.post('/', function(req, res, next) {
   function getWikiResults(assistant) {
     console.log('** Handling action: ' + KEYWORD_ACTION);
     if (keywords.length > 2) {
-      var options = { query: keywords, format: "html", summaryOnly: true }; //prop: "extracts", explaintext: "1"}
+      var options = { query: keywords, format: "html", summaryOnly: true , lang: "en"}; //prop: "extracts", explaintext: "1"}
       wikipedia.searchArticle(options, function(err, htmlWikiText) {
           if (err) {
               console.log("An error occurred. Options: " + JSON.stringify(options) + " Err: " + err);
@@ -103,27 +107,36 @@ app.post('/', function(req, res, next) {
               KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Err: " + err});
               return;
           }
-          // console.log("== Raw text we got from API: " + htmlWikiText);
-          let textOnly = cleanHTMLTags(htmlWikiText); //   cleanHTMLTags  .replace(/<(?:.|\n)*?>/gm, '');
-          textOnly = cleanHTMLTags(textOnly);
-          textOnly = cleanHTMLTags(textOnly);
-          textOnly = cleanHTMLTags(textOnly);
-          // Let's have 100 words per answer as we have limit of 2min per response.
-          let textTrimmed = trimToWordsLimit(100, textOnly);
-          // so we can full sentance and not in the middle
-          let inx1 = textTrimmed.lastIndexOf("."); 
-          textTrimmed = textTrimmed.substring(0, inx1);
-          console.log("For " + keywords + " We got: " + textTrimmed);
-          let res = "So for " + keywords + " I could not find any article. What something else?"; //<speak>
-          var ts = Math.round((new Date()).getTime() / 1000);
-          if (textTrimmed.length > 2) {
-            res = "For " + keywords + ' I got this explanation, ' + textTrimmed + ". What something else?"; //<break time="400ms"/>
-            KeywordDB.create({ time: ts, keyword: keywords, status: "GOOD"});
+          //console.log("== Raw text we got from API: " + htmlWikiText);
+          let textOnly = cleanHTMLTags(htmlWikiText); 
+          //console.log("== 1 text: " + textOnly);
+          try {  
+            textOnly = cleanHTMLTags(textOnly);
+            //console.log("== 2 text: " + textOnly);
+            textOnly = cleanHTMLTags(textOnly);
+            //console.log("== 3 text: " + textOnly);
+            textOnly = cleanHTMLTags(textOnly);
+            //console.log("== 4 text: " + textOnly);
+            // Let's have 100 words per answer as we have limit of 2min per response.
+            let textTrimmed = trimToWordsLimit(100, textOnly);
+            // so we can full sentance and not in the middle
+            let inx1 = textTrimmed.lastIndexOf("."); 
+            textTrimmed = textTrimmed.substring(0, inx1);
+            console.log("For " + keywords + " We got: " + textTrimmed);
+            let res = "So for " + keywords + " I could not find any article. What something else?"; //<speak>
+            var ts = Math.round((new Date()).getTime() / 1000);
+            if (textTrimmed.length > 2) {
+              res = "For " + keywords + ' I got this explanation, ' + textTrimmed + ". What something else?"; //<break time="400ms"/>
+              KeywordDB.create({ time: ts, keyword: keywords, status: "GOOD"});
+            }
+            else {
+              KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Got Nothing"});
+            }
+            assistant.ask(res);
           }
-          else {
-            KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Got Nothing"});
+          catch(error) {
+            console.log("(!) ERROR for: " + options + " textOnly: " + textOnly);
           }
-          assistant.ask(res);
       });
     } 
     else {
