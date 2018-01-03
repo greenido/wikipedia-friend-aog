@@ -9,7 +9,7 @@
 
 body {
   font-family: helvetica, arial, sans-serif;
-  background-color: lightyellow;
+  
   margin: 25px;
 }
 
@@ -18,9 +18,12 @@ h1 {
   color: blue;
 }
 
-main img {
+main  {
   margin-top: 30px;
   width: 800px;
+  border-radius: 25px;
+  background-color:  #c7c78a85;
+  padding: 1em;
 }
 
 footer {
