@@ -8,7 +8,7 @@
 // http://docs.sequelizejs.com/manual/tutorial/models-definition.html#database-synchronization
 
 // init project pkgs
-const wikipedia = require("wikipedia-js");
+//const wikipedia = require("wikipedia-js");
 const express = require('express');
 const ApiAiAssistant = require('actions-on-google').ApiAiAssistant;
 const bodyParser = require('body-parser');
@@ -32,7 +32,6 @@ app.get("/", function (request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
-
 // Calling GA to make sure how many invocations we had on this skill
 const GAurl = "https://ga-beacon.appspot.com/UA-65622529-1/wikipeida-friend-glitch-server/?pixel=0";
 request.get(GAurl, (error, response, body) => {
@@ -47,8 +46,7 @@ app.post('/', function(req, res, next) {
     
   // Instantiate a new API.AI assistant object.
   const assistant = new ApiAiAssistant({request: req, response: res});
-  
-  const keywords = assistant.getArgument('user-keywords');
+  let keywords = assistant.getArgument('user-keywords');
   // Declare constants for your action and parameter names
   const KEYWORD_ACTION = 'keyword'; 
   logObject('user-keywords' , keywords);
@@ -68,6 +66,15 @@ app.post('/', function(req, res, next) {
         trimmed = text.split(/\s+/, limit).join(" ");
     }
     return trimmed;
+  }
+  
+  //
+  //
+  //
+  function getOnlyAsciiChars(str) {
+    let cleanStr = str.replace(/[^\x00-\x7F]/g, "");
+    cleanStr = cleanStr.replace(/\\u\w+/g, "");
+    return cleanStr;
   }
   
   //
@@ -97,9 +104,12 @@ app.post('/', function(req, res, next) {
   // Create functions to handle intents here
   function getWikiResults(assistant) {
     console.log('** Handling action: ' + KEYWORD_ACTION);
+    let keywordsUrl = keywords.replace(/\s/g, "+");
     if (keywords.length > 2) {
-      var options = { query: keywords, format: "html", summaryOnly: true , lang: "en"}; //prop: "extracts", explaintext: "1"}
-      wikipedia.searchArticle(options, function(err, htmlWikiText) {
+      //var options = { query: keywords, format: "html", summaryOnly: true , lang: "en"}; //prop: "extracts", explaintext: "1"}
+      request({ method: 'GET',
+               url:'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext=&exsectionformat=plain&redirects=&titles=' + keywordsUrl},
+              function (err, response, body) {
           if (err) {
               console.log("An error occurred. Options: " + JSON.stringify(options) + " Err: " + err);
               assistant.tell("Sorry something is not working at the moment. Please try again laster.");
@@ -107,15 +117,14 @@ app.post('/', function(req, res, next) {
               KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Err: " + err});
               return;
           }
-          //console.log("== Raw text we got from API: " + htmlWikiText);
-          let textOnly = cleanHTMLTags(htmlWikiText); 
-          //console.log("== 1 text: " + textOnly);
           try {  
-            textOnly = cleanHTMLTags(textOnly);
-            //console.log("== 2 text: " + textOnly);
-            textOnly = cleanHTMLTags(textOnly);
-            //console.log("== 3 text: " + textOnly);
-            textOnly = cleanHTMLTags(textOnly);
+            let htmlWikiText = response.body; //  query.pages.[0].extract;
+            let inx11 = htmlWikiText.indexOf('extract\":\"') + 10;
+            htmlWikiText = htmlWikiText.substring(inx11);
+            console.log("== Raw text we got from API: " + JSON.stringify(htmlWikiText));
+            let textOnly = getOnlyAsciiChars(htmlWikiText); 
+            console.log("== 1 text: " + textOnly);
+          
             //console.log("== 4 text: " + textOnly);
             // Let's have 100 words per answer as we have limit of 2min per response.
             let textTrimmed = trimToWordsLimit(100, textOnly);
@@ -137,7 +146,7 @@ app.post('/', function(req, res, next) {
           catch(error) {
             console.log("(!) ERROR for: " + options + " textOnly: " + textOnly);
           }
-      });
+      }); //
     } 
     else {
       // Using 'ask' and not 'tell' as we don't wish to finish the conversation
@@ -172,7 +181,6 @@ function logObject(message, object, options) {
 //
 // DB stuff
 //
-
 try {
     // setup a new database
     // using database credentials set in .env
@@ -217,11 +225,10 @@ try {
     .catch(function (err) {
       console.log('Unable to connect to the database: ', err);
     });
-
-  }
-  catch(e) {
+}
+catch(e) {
     console.log('ERROR with the database: ', e);
-  }
+}
 
 
 //
