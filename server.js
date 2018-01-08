@@ -1,14 +1,17 @@
 // 
 // Action on google to get interesting stuff from wikipedia and get smarter
+//
 // @author: Ido Green | @greenido
 // @date: Dec 2017
+// @last update: Jan 2018
+//
 // @see:
 // https://github.com/greenido/bitcoin-info-action
 // http://expressjs.com/en/starter/static-files.html
 // http://docs.sequelizejs.com/manual/tutorial/models-definition.html#database-synchronization
-
+//
 // init project pkgs
-//const wikipedia = require("wikipedia-js");
+
 const express = require('express');
 const ApiAiAssistant = require('actions-on-google').ApiAiAssistant;
 const bodyParser = require('body-parser');
@@ -38,12 +41,11 @@ request.get(GAurl, (error, response, body) => {
   console.log(" - Called the GA - " + new Date());
 });
 
+//
 // Handle webhook requests
+//
 app.post('/', function(req, res, next) {
-  
-  //logObject('Request headers: ', req.headers);
-  //logObject('Request body: ', req.body);
-    
+      
   // Instantiate a new API.AI assistant object.
   const assistant = new ApiAiAssistant({request: req, response: res});
   let keywords = assistant.getArgument('user-keywords');
@@ -106,7 +108,6 @@ app.post('/', function(req, res, next) {
     console.log('** Handling action: ' + KEYWORD_ACTION);
     let keywordsUrl = keywords.replace(/\s/g, "+");
     if (keywords.length > 2) {
-      //var options = { query: keywords, format: "html", summaryOnly: true , lang: "en"}; //prop: "extracts", explaintext: "1"}
       request({ method: 'GET',
                url:'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext=&exsectionformat=plain&redirects=&titles=' + keywordsUrl},
               function (err, response, body) {
@@ -121,11 +122,9 @@ app.post('/', function(req, res, next) {
             let htmlWikiText = response.body; //  query.pages.[0].extract;
             let inx11 = htmlWikiText.indexOf('extract\":\"') + 10;
             htmlWikiText = htmlWikiText.substring(inx11);
-            console.log("== Raw text we got from API: " + JSON.stringify(htmlWikiText));
+            //console.log("== Raw text we got from API: " + JSON.stringify(htmlWikiText));
             let textOnly = getOnlyAsciiChars(htmlWikiText); 
-            console.log("== 1 text: " + textOnly);
-          
-            //console.log("== 4 text: " + textOnly);
+            //console.log("== 1 text: " + textOnly);
             // Let's have 100 words per answer as we have limit of 2min per response.
             let textTrimmed = trimToWordsLimit(100, textOnly);
             // so we can full sentance and not in the middle
