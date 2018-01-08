@@ -111,7 +111,7 @@ app.post('/', function(req, res, next) {
                url:'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&explaintext=&exsectionformat=plain&redirects=&titles=' + keywordsUrl},
               function (err, response, body) {
           if (err) {
-              console.log("An error occurred. Options: " + JSON.stringify(options) + " Err: " + err);
+              console.log("An error occurred. keywords: " + keywords + " Err: " + JSON.stringify(err));
               assistant.tell("Sorry something is not working at the moment. Please try again laster.");
               var ts = Math.round((new Date()).getTime() / 1000);
               KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Err: " + err});
@@ -144,7 +144,7 @@ app.post('/', function(req, res, next) {
             assistant.ask(res);
           }
           catch(error) {
-            console.log("(!) ERROR for: " + options + " textOnly: " + textOnly);
+            console.log("(!) ERROR for keywords: " + keywords + " Error: " + JSON.stringify(error));
           }
       }); //
     } 
