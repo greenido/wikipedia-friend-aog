@@ -71,11 +71,12 @@ app.post('/', function(req, res, next) {
   }
   
   //
-  //
+  // Clean the text we are getting from the API so it will work great with voice only
   //
   function getOnlyAsciiChars(str) {
     let cleanStr = str.replace(/[^\x00-\x7F]/g, "");
     cleanStr = cleanStr.replace(/\\u\w+/g, "");
+    cleanStr = cleanStr.replace(/\\n/g, "");
     return cleanStr;
   }
   
