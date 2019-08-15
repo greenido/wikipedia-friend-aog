@@ -3,7 +3,7 @@
 //
 // @author: Ido Green | @greenido
 // @date: Dec 2017
-// @last update: Jan 2018
+// @last update: Aug 2019 (removing the writes to DB)
 //
 // @see:
 // https://github.com/greenido/bitcoin-info-action
@@ -45,7 +45,9 @@ request.get(GAurl, (error, response, body) => {
 // Handle webhook requests
 //
 app.post('/', function(req, res, next) {
-      
+  // logObject("-- req: " , req);
+  // logObject("-- res: " , res);
+  
   // Instantiate a new API.AI assistant object.
   const assistant = new ApiAiAssistant({request: req, response: res});
   let keywords = assistant.getArgument('user-keywords');
@@ -131,15 +133,15 @@ app.post('/', function(req, res, next) {
             // so we can full sentance and not in the middle
             let inx1 = textTrimmed.lastIndexOf("."); 
             textTrimmed = textTrimmed.substring(0, inx1);
-            console.log("For " + keywords + " We got: " + textTrimmed);
+            console.log("🏝 For ''" + keywords + "'' We got: " + textTrimmed);
             let res = "So for " + keywords + " I could not find any article. What something else?"; //<speak>
             var ts = Math.round((new Date()).getTime() / 1000);
             if (textTrimmed.length > 2) {
               res = "For " + keywords + ' I got this explanation, ' + textTrimmed + ". What something else?"; //<break time="400ms"/>
-              KeywordDB.create({ time: ts, keyword: keywords, status: "GOOD"});
+             // KeywordDB.create({ time: ts, keyword: keywords, status: "GOOD"});
             }
             else {
-              KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Got Nothing"});
+             // KeywordDB.create({ time: ts, keyword: keywords, status: "KAKA - Got Nothing"});
             }
             assistant.ask(res);
           }
